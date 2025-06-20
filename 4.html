@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎯 تحدي اليوم</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-red-100 to-yellow-50 min-h-screen p-6">
+  <h1 class="text-3xl text-center font-bold text-red-800 mb-6">🔥 تحدي اليوم</h1>  <div class="bg-white shadow-lg rounded p-6 max-w-md mx-auto text-center">
+    <p id="challengeText" class="text-xl text-gray-700 mb-4">جاري تحميل التحدي...</p>
+    <button id="completeBtn" onclick="completeChallenge()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">✅ أنهيت التحدي</button>
+    <div id="pointsMsg" class="mt-4 text-green-700 font-bold hidden">🎉 تمت إضافة <span id="challengePoints"></span> نقطة!</div>
+  </div>  <div class="text-center mt-6">
+    <a href="index.html" class="text-blue-700 underline">🔙 العودة إلى الصفحة الرئيسية</a>
+  </div>  <script>
+    const challenges = [
+      { text: "راجع 10 صفحات من كتاب صعب 📖", points: 150 },
+      { text: "احفظ 5 أحاديث جديدة من الأربعين النووية 🕋", points: 130 },
+      { text: "مارس تمرين البلانك 5 دقائق دون توقف 💪", points: 160 },
+      { text: "ترجم مقالًا إنجليزيًا متوسطًا بالكامل ✍️", points: 140 },
+      { text: "صمم صفحة ويب كاملة باستخدام HTML + CSS 👨‍💻", points: 180 },
+      { text: "احفظ 10 أبيات من ألفية ابن مالك 📜", points: 200 },
+      { text: "ادرس ساعة كاملة من علم شرعي بدون مشتتات 🕌", points: 120 },
+      { text: "اكتب ملخصًا شخصيًا لـ 3 فيديوهات تعليمية 📘", points: 100 },
+      { text: "أجب عن 20 سؤال في برنامج دولينجو 🎯", points: 110 },
+      { text: "تمرن 45 دقيقة متواصلة بأي طريقة تحب 🏃", points: 170 },
+      { text: "اكتب مقال عن أهمية الوقت ✍️", points: 100 },
+      { text: "احفظ 20 كلمة إنجليزية جديدة 📚", points: 90 },
+      { text: "تعلم 3 قواعد جديدة في اللغة الفرنسية 🇫🇷", points: 95 },
+      { text: "راجع سورة الكهف كاملة 🕌", points: 150 },
+      { text: "قم بتمارين رياضية لمدة ساعة كاملة 💪", points: 160 },
+      { text: "اكتب 10 أفكار لمشروع جديد 🧠", points: 130 },
+      { text: "تعلم أداة جديدة في لينكس 🔧", points: 120 },
+      { text: "اكتب كود بسيط من 100 سطر بلغة HTML 🚀", points: 180 },
+      { text: "احفظ 3 أبيات من الشعر الجاهلي ✍️", points: 110 },
+      { text: "راجع 3 دروس من مادة تحبها 📘", points: 90 },
+      { text: "تعلم قاعدة صرفية جديدة في العربية 📚", points: 100 },
+      { text: "أعد ترتيب غرفتك بشكل إبداعي 🛋️", points: 80 },
+      { text: "اقرأ فصلًا كاملًا من كتاب في التنمية الذاتية 📖", points: 120 },
+      { text: "شاهد فيديو علمي واكتب عنه 5 نقاط 🧪", points: 100 },
+      { text: "ارسم فكرة تطبيق جديد ✏️", points: 130 },
+      { text: "احفظ آيتين جديدتين مع التفسير 🕋", points: 140 },
+      { text: "راجع قواعد CSS المتقدمة 🎨", points: 150 },
+      { text: "تعلم مبدأ جديد في علم النفس 👀", points: 100 },
+      { text: "تحدث 5 دقائق بالإنجليزية مع نفسك 🎤", points: 90 },
+      { text: "ابدأ عادات جديدة لمدة يوم كامل 💯", points: 110 },
+      { text: "اكتب خطة لأسبوعك القادم 🗓️", points: 100 },
+      { text: "صمّم صفحة تعريفية بلغة إنجليزية عن نفسك ✨", points: 140 },
+      { text: "اكمل 10 تحديات صغيرة داخل التطبيق 🎯", points: 150 },
+      { text: "اصنع فيديو قصير عن شيء تعلمته 🎥", points: 120 },
+      { text: "احفظ 15 مصطلحًا علميًا جديدًا 🔬", points: 130 },
+      { text: "اقرأ 30 صفحة من كتاب تطوير ذات 📖", points: 120 },
+      { text: "نظم مجلدات جهازك بذكاء 🗂️", points: 100 },
+      { text: "اطلع على 5 أدوات ويب جديدة وجرّبها 🌐", points: 100 },
+      { text: "اختبر سرعة كتابتك على لوحة المفاتيح 🎹", points: 90 },
+      { text: "تعلم مكون جديد في CSS مثل grid 🎨", points: 120 },
+      { text: "جرب تطبيق تعليمي جديد اليوم 📱", points: 100 },
+      { text: "ارسم فكرة لواجهة مستخدم لتطبيق 🎨", points: 130 },
+      { text: "اقرأ سيرة ذاتية لشخصية تاريخية 💡", points: 110 },
+      { text: "قم بتمرين تأمل 10 دقائق 🧘", points: 80 },
+      { text: "اكتب قائمة بأهداف شهرية 🎯", points: 90 },
+      { text: "صمّم بوربوينت تعليمي مبسط 🎞️", points: 110 },
+      { text: "تعلم ميزة جديدة في جوجل أو يوتيوب 🔍", points: 90 },
+      { text: "استمع لمقطع تحفيزي وأعد تلخيصه 📻", points: 100 }
+    ];
+
+    let challenge = {};
+
+    function getTodayKey() {
+      const now = new Date();
+      return now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+    }
+
+    function showDailyChallenge() {
+      const todayKey = getTodayKey();
+      const lastKey = localStorage.getItem('lastChallengeKey');
+      if (lastKey !== todayKey) {
+        const randomIndex = Math.floor(Math.random() * challenges.length);
+        localStorage.setItem('todayChallenge', JSON.stringify(challenges[randomIndex]));
+        localStorage.setItem('lastChallengeKey', todayKey);
+        localStorage.removeItem('challengeCompleted');
+      }
+
+      challenge = JSON.parse(localStorage.getItem('todayChallenge'));
+      document.getElementById("challengeText").textContent = challenge.text;
+
+      if (localStorage.getItem("challengeCompleted") === "yes") {
+        document.getElementById("completeBtn").disabled = true;
+        document.getElementById("completeBtn").textContent = "✅ تم إنهاء التحدي اليوم";
+        document.getElementById("pointsMsg").classList.remove("hidden");
+        document.getElementById("challengePoints").textContent = challenge.points;
+      }
+    }
+
+    function completeChallenge() {
+      if (localStorage.getItem("challengeCompleted") === "yes") return;
+
+      let score = parseInt(localStorage.getItem("score")) || 0;
+      score += challenge.points;
+      localStorage.setItem("score", score);
+      localStorage.setItem("challengeCompleted", "yes");
+
+      document.getElementById("challengePoints").textContent = challenge.points;
+      document.getElementById("pointsMsg").classList.remove("hidden");
+      document.getElementById("completeBtn").disabled = true;
+      document.getElementById("completeBtn").textContent = "✅ تم إنهاء التحدي اليوم";
+    }
+
+    showDailyChallenge();
+  </script></body>
+</html>
