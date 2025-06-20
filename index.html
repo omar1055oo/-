@@ -182,5 +182,16 @@
     displayTasks();
     renderField();
     updateScore();
+
+    function resetAll() {
+  if (confirm("هل أنت متأكد أنك تريد إعادة التشغيل؟")) {
+    localStorage.clear();
+    location.reload();
+  }
+    }
+
+    <button onclick="resetAll()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+  إعادة تشغيل التطبيق 🔁
+</button>
   </script></body>
 </html>
