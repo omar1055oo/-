@@ -1,197 +1,1 @@
-<!DOCTYPE html><html lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منظم المهام</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Cairo', sans-serif;
-    }
-  </style>
-</head>
-<body class="bg-gradient-to-br from-green-100 to-yellow-100 min-h-screen p-4">
-  <h1 class="text-3xl text-center font-bold mb-6 text-green-800 drop-shadow">منظم المهام والمزرعة</h1>  <!-- أصوات --><audio id="completeSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5d60b02f83.mp3"></audio> <audio id="buySound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_72998c3d96.mp3"></audio>
-
-  <!-- إضافة مهمة -->  <div class="bg-white p-4 rounded shadow-md max-w-md mx-auto">
-    <input type="text" id="taskName" placeholder="اسم المهمة" class="w-full p-2 border rounded mb-2">
-    <input type="number" id="taskTime" placeholder="الوقت المتوقع (بالدقائق)" class="w-full p-2 border rounded mb-2">
-    <select id="taskDifficulty" class="w-full p-2 border rounded mb-2">
-      <option value="1">سهلة</option>
-      <option value="2">سهلة قليلاً</option>
-      <option value="3">متوسطة</option>
-      <option value="4">صعبة</option>
-      <option value="5">صعبة جدًا</option>
-    </select>
-    <button onclick="addTask()" class="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700">إضافة المهمة</button>
-  </div>  <!-- جدول المهام -->  <div class="max-w-md mx-auto mt-6">
-    <table class="w-full text-right bg-white shadow rounded overflow-hidden">
-      <thead class="bg-green-200 text-green-800">
-        <tr>
-          <th class="p-2">المهمة</th>
-          <th class="p-2">الوقت</th>
-          <th class="p-2">الصعوبة</th>
-          <th class="p-2">الإجراء</th>
-        </tr>
-      </thead>
-      <tbody id="taskTableBody"></tbody>
-    </table>
-  </div>  <!-- النقاط والسوق -->  <div class="text-center mt-6">
-    <div id="scoreDisplay" class="font-semibold text-xl text-green-700 mb-4">النقاط: <span id="score">0</span></div>
-    <h2 class="text-2xl font-bold mb-2 text-green-800">🛒 السوق</h2>
-    <div class="bg-white p-4 rounded shadow-md max-w-md mx-auto space-y-2">
-      <div class="flex justify-between items-center border-b pb-2">
-        <span>🍎 شجرة تفاح</span>
-        <button onclick="buyItem('apple')" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">شراء بـ 50</button>
-      </div>
-      <div class="flex justify-between items-center border-b pb-2">
-        <span>🌴 نخلة</span>
-        <button onclick="buyItem('palm')" class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700">شراء بـ 70</button>
-      </div>
-      <div class="flex justify-between items-center border-b pb-2">
-        <span>🎄 شجرة صنوبر</span>
-        <button onclick="buyItem('pine')" class="bg-teal-600 text-white px-3 py-1 rounded hover:bg-teal-700">شراء بـ 100</button>
-      </div>
-      <div class="flex justify-between items-center border-b pb-2">
-        <span>⛏️ ذهب</span>
-        <button onclick="buyItem('gold')" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">شراء بـ 120</button>
-      </div>
-      <div class="flex justify-between items-center border-b pb-2">
-        <span>🪨 فضة</span>
-        <button onclick="buyItem('silver')" class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">شراء بـ 90</button>
-      </div>
-      <div class="flex justify-between items-center">
-        <span>💎 ياقوت</span>
-        <button onclick="buyItem('sapphire')" class="bg-blue-800 text-white px-3 py-1 rounded hover:bg-blue-900">شراء بـ 200</button>
-      </div>
-      <div class="flex justify-between items-center">
-        <span>🔮 حجر أركاني</span>
-        <button onclick="buyItem('arcane')" class="bg-purple-800 text-white px-3 py-1 rounded hover:bg-purple-900">شراء بـ 300</button>
-      </div>
-    </div>
-  </div>  <!-- المزرعة (إيموجي) -->  <div class="max-w-md mx-auto mt-6">
-    <div id="field" class="flex flex-wrap gap-2 justify-start items-center bg-white p-4 rounded shadow-md min-h-[80px]"></div>
-  </div>  <script>
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    let score = parseInt(localStorage.getItem('score')) || 0;
-    let items = JSON.parse(localStorage.getItem('items')) || [];
-
-    const completeSound = document.getElementById("completeSound");
-    const buySound = document.getElementById("buySound");
-
-    function saveAll() {
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      localStorage.setItem('score', score);
-      localStorage.setItem('items', JSON.stringify(items));
-    }
-
-    function addTask() {
-      const name = document.getElementById('taskName').value.trim();
-      const time = parseInt(document.getElementById('taskTime').value);
-      const difficulty = parseInt(document.getElementById('taskDifficulty').value);
-
-      if (!name || isNaN(time) || isNaN(difficulty)) {
-        alert("يرجى إدخال كل البيانات بشكل صحيح");
-        return;
-      }
-
-      tasks.push({ name, time, difficulty, completed: false });
-      saveAll();
-      displayTasks();
-    }
-
-    function completeTask(index) {
-      if (!tasks[index].completed) {
-        tasks[index].completed = true;
-        score += tasks[index].difficulty * 10;
-        completeSound.play();
-        saveAll();
-        displayTasks();
-        updateScore();
-      }
-    }
-
-    function displayTasks() {
-      const sortedTasks = tasks.filter(t => !t.completed).sort((a, b) => b.difficulty - a.difficulty || a.time - b.time);
-      const tableBody = document.getElementById('taskTableBody');
-      tableBody.innerHTML = '';
-
-      sortedTasks.forEach((task, index) => {
-        const row = document.createElement('tr');
-        row.className = 'border-b hover:bg-green-50';
-        row.innerHTML = `
-          <td class='p-2'>${task.name}</td>
-          <td class='p-2'>${task.time} د</td>
-          <td class='p-2'>${task.difficulty}</td>
-          <td class='p-2'>
-            <button class='px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700' onclick="completeTask(${tasks.indexOf(task)})">إنهاء</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    function updateScore() {
-      document.getElementById('score').innerText = score;
-    }
-
-    function buyItem(type) {
-      const prices = {
-        apple: 50, palm: 70, pine: 100,
-        gold: 120, silver: 90,
-        sapphire: 200, arcane: 300
-      };
-
-      if (score >= prices[type]) {
-        score -= prices[type];
-        items.push(type);
-        buySound.play();
-        saveAll();
-        updateScore();
-        renderField();
-      } else {
-        alert("لا توجد نقاط كافية!");
-      }
-    }
-
-    function getItemLabel(type) {
-      const labels = {
-        apple: '🍎',
-        palm: '🌴',
-        pine: '🎄',
-        gold: '⛏️',
-        silver: '🪨',
-        sapphire: '💎',
-        arcane: '🔮'
-      };
-      return labels[type] || '❓';
-    }
-
-    function renderField() {
-      const field = document.getElementById('field');
-      field.innerHTML = '';
-      items.forEach(type => {
-        const span = document.createElement('span');
-        span.innerText = getItemLabel(type);
-        span.className = 'text-3xl';
-        field.appendChild(span);
-      });
-    }
-
-    displayTasks();
-    renderField();
-    updateScore();
-
-    function resetAll() {
-  if (confirm("هل أنت متأكد أنك تريد إعادة التشغيل؟")) {
-    localStorage.clear();
-    location.reload();
-  }
-    }
-
-    <button onclick="resetAll()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-  إعادة تشغيل التطبيق 🔁
-</button>
-  </script></body>
-</html>
+.
