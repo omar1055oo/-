@@ -438,4 +438,370 @@
     });
   </script>
 </body>
+                                                             </html>      <option value="2">سهلة قليلاً</option>
+      <option value="3">متوسطة</option>
+      <option value="4">صعبة</option>
+      <option value="5">صعبة جدًا</option>
+    </select>
+    <button onclick="addTask()" class="bg-blue-600 text-white w-full py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
+      <i class="fas fa-plus"></i> إضافة المهمة
+    </button>
+  </div>
+
+  <!-- جدول المهام -->
+  <div class="max-w-md mx-auto mt-6 fade-in">
+    <h2 class="text-xl font-bold mb-3 text-green-800 flex items-center gap-2">
+      <i class="fas fa-tasks"></i> قائمة المهام
+    </h2>
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <table class="w-full text-right">
+        <thead class="bg-green-200 text-green-800">
+          <tr>
+            <th class="p-3">المهمة</th>
+            <th class="p-3">الوقت</th>
+            <th class="p-3">الصعوبة</th>
+            <th class="p-3">الإجراء</th>
+          </tr>
+        </thead>
+        <tbody id="taskTableBody"></tbody>
+      </table>
+      <div id="emptyTasks" class="p-6 text-center text-gray-500 hidden">
+        <i class="fas fa-inbox text-4xl mb-2"></i>
+        <p>لا توجد مهام حالياً</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- النقاط والسوق -->
+  <div class="text-center mt-6 fade-in">
+    <div id="scoreDisplay" class="font-semibold text-xl text-green-700 mb-4 bg-white p-3 rounded-lg shadow-md inline-block">
+      <i class="fas fa-coins text-yellow-500"></i> النقاط: <span id="score">0</span>
+    </div>
+    <h2 class="text-2xl font-bold mb-2 text-green-800 flex items-center justify-center gap-2">
+      <i class="fas fa-shopping-cart"></i> السوق
+    </h2>
+    <div class="bg-white p-4 rounded-lg shadow-md max-w-md mx-auto space-y-3">
+      <div class="flex justify-between items-center border-b pb-3">
+        <span class="flex items-center gap-2"><i class="fas fa-apple-alt"></i> شجرة تفاح</span>
+        <button onclick="buyItem('apple')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 50
+        </button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-3">
+        <span class="flex items-center gap-2"><i class="fas fa-tree"></i> نخلة</span>
+        <button onclick="buyItem('palm')" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 70
+        </button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-3">
+        <span class="flex items-center gap-2"><i class="fas fa-tree"></i> شجرة صنوبر</span>
+        <button onclick="buyItem('pine')" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 100
+        </button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-3">
+        <span class="flex items-center gap-2"><i class="fas fa-gem"></i> ذهب</span>
+        <button onclick="buyItem('gold')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 120
+        </button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-3">
+        <span class="flex items-center gap-2"><i class="fas fa-gem"></i> فضة</span>
+        <button onclick="buyItem('silver')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 90
+        </button>
+      </div>
+      <div class="flex justify-between items-center border-b pb-3">
+        <span class="flex items-center gap-2"><i class="fas fa-gem"></i> ياقوت</span>
+        <button onclick="buyItem('sapphire')" class="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-900 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 200
+        </button>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="flex items-center gap-2"><i class="fas fa-dragon"></i> حجر أركاني</span>
+        <button onclick="buyItem('arcane')" class="bg-purple-800 text-white px-4 py-2 rounded-lg hover:bg-purple-900 transition flex items-center gap-2">
+          <i class="fas fa-shopping-bag"></i> شراء بـ 300
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- المزرعة -->
+  <div class="max-w-md mx-auto mt-6 fade-in">
+    <h2 class="text-xl font-bold mb-3 text-green-800 flex items-center gap-2">
+      <i class="fas fa-tractor"></i> المزرعة
+    </h2>
+    <div id="field" class="flex flex-wrap gap-3 justify-start items-center bg-white p-4 rounded-lg shadow-md min-h-[100px]"></div>
+    <div id="emptyField" class="bg-white p-6 text-center text-gray-500 rounded-lg shadow-md">
+      <i class="fas fa-seedling text-4xl mb-2"></i>
+      <p>لا توجد عناصر في المزرعة بعد</p>
+    </div>
+  </div>
+
+  <!-- زر إعادة التشغيل -->
+  <div class="text-center mt-6 fade-in">
+    <button onclick="resetAll()" class="bg-red-600 text-white px-5 py-2.5 rounded-lg hover:bg-red-700 transition flex items-center gap-2 mx-auto">
+      <i class="fas fa-redo"></i> إعادة تشغيل التطبيق
+    </button>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let score = parseInt(localStorage.getItem('score')) || 0;
+    let items = JSON.parse(localStorage.getItem('items')) || [];
+
+    const completeSound = document.getElementById("completeSound");
+    const buySound = document.getElementById("buySound");
+    const errorSound = document.getElementById("errorSound");
+
+    // دالة لعرض الإشعارات
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'error' ? 'bg-red-500' : 
+                     type === 'success' ? 'bg-green-500' : 'bg-blue-500';
+      
+      toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg toast opacity-0 transform translate-y-2`;
+      toast.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // إظهار الإشعار بتحريكه
+      setTimeout(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100');
+      }, 10);
+      
+      // إخفاء الإشعار بعد 3 ثوان
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+          toastContainer.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
+    function saveAll() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      localStorage.setItem('score', score);
+      localStorage.setItem('items', JSON.stringify(items));
+    }
+
+    function addTask() {
+      const name = document.getElementById('taskName').value.trim();
+      const time = parseInt(document.getElementById('taskTime').value);
+      const difficulty = parseInt(document.getElementById('taskDifficulty').value);
+
+      if (!name || isNaN(time) || isNaN(difficulty)) {
+        showToast("يرجى إدخال كل البيانات بشكل صحيح", "error");
+        document.getElementById('taskName').classList.add('shake');
+        setTimeout(() => {
+          document.getElementById('taskName').classList.remove('shake');
+        }, 500);
+        return;
+      }
+
+      tasks.push({ name, time, difficulty, completed: false });
+      saveAll();
+      displayTasks();
+      
+      // تفريغ الحقول بعد الإضافة
+      document.getElementById('taskName').value = '';
+      document.getElementById('taskTime').value = '';
+      
+      showToast("تم إضافة المهمة بنجاح", "success");
+    }
+
+    function completeTask(index) {
+      if (!tasks[index].completed) {
+        tasks[index].completed = true;
+        const earnedPoints = tasks[index].difficulty * 10;
+        score += earnedPoints;
+        completeSound.play();
+        saveAll();
+        displayTasks();
+        updateScore();
+        
+        // تأثير عند إكمال المهمة
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        scoreDisplay.classList.add('bounce');
+        setTimeout(() => {
+          scoreDisplay.classList.remove('bounce');
+        }, 600);
+        
+        showToast(`أحسنت! لقد ربحت ${earnedPoints} نقطة`, "success");
+      }
+    }
+
+    function displayTasks() {
+      const sortedTasks = tasks.filter(t => !t.completed).sort((a, b) => b.difficulty - a.difficulty || a.time - b.time);
+      const tableBody = document.getElementById('taskTableBody');
+      const emptyTasks = document.getElementById('emptyTasks');
+      tableBody.innerHTML = '';
+
+      if (sortedTasks.length === 0) {
+        emptyTasks.classList.remove('hidden');
+      } else {
+        emptyTasks.classList.add('hidden');
+      }
+
+      sortedTasks.forEach((task, index) => {
+        const row = document.createElement('tr');
+        row.className = 'task-row border-b hover:bg-green-50 fade-in';
+        row.innerHTML = `
+          <td class='p-3'>${task.name}</td>
+          <td class='p-3'>${task.time} د</td>
+          <td class='p-3'>
+            <span class="px-2 py-1 rounded-full text-xs ${getDifficultyColor(task.difficulty)}">
+              ${getDifficultyText(task.difficulty)}
+            </span>
+          </td>
+          <td class='p-3'>
+            <button class='px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-1' onclick="completeTask(${tasks.indexOf(task)})">
+              <i class="fas fa-check"></i> إنهاء
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function getDifficultyColor(level) {
+      switch(level) {
+        case 1: return 'bg-green-100 text-green-800';
+        case 2: return 'bg-blue-100 text-blue-800';
+        case 3: return 'bg-yellow-100 text-yellow-800';
+        case 4: return 'bg-orange-100 text-orange-800';
+        case 5: return 'bg-red-100 text-red-800';
+        default: return 'bg-gray-100 text-gray-800';
+      }
+    }
+
+    function getDifficultyText(level) {
+      switch(level) {
+        case 1: return 'سهلة';
+        case 2: return 'سهلة قليلاً';
+        case 3: return 'متوسطة';
+        case 4: return 'صعبة';
+        case 5: return 'صعبة جدًا';
+        default: return 'غير معروف';
+      }
+    }
+
+    function updateScore() {
+      document.getElementById('score').innerText = score;
+    }
+
+    function buyItem(type) {
+      const prices = {
+        apple: 50, palm: 70, pine: 100,
+        gold: 120, silver: 90,
+        sapphire: 200, arcane: 300
+      };
+
+      if (score >= prices[type]) {
+        score -= prices[type];
+        items.push(type);
+        buySound.play();
+        saveAll();
+        updateScore();
+        renderField();
+        
+        // تأثير عند الشراء
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        scoreDisplay.classList.add('bounce');
+        setTimeout(() => {
+          scoreDisplay.classList.remove('bounce');
+        }, 600);
+        
+        showToast("تم الشراء بنجاح!", "success");
+      } else {
+        errorSound.play();
+        showToast("لا يوجد لديك ما يكفي من النقاط", "error");
+        
+        // تأثير عند الخطأ
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        scoreDisplay.classList.add('shake');
+        setTimeout(() => {
+          scoreDisplay.classList.remove('shake');
+        }, 500);
+      }
+    }
+
+    function getItemLabel(type) {
+      const labels = {
+        apple: '🍎',
+        palm: '🌴',
+        pine: '🎄',
+        gold: '⛏️',
+        silver: '🪨',
+        sapphire: '💎',
+        arcane: '🔮'
+      };
+      return labels[type] || '❓';
+    }
+
+    function renderField() {
+      const field = document.getElementById('field');
+      const emptyField = document.getElementById('emptyField');
+      field.innerHTML = '';
+      
+      if (items.length === 0) {
+        emptyField.classList.remove('hidden');
+        field.classList.add('hidden');
+      } else {
+        emptyField.classList.add('hidden');
+        field.classList.remove('hidden');
+        
+        items.forEach(type => {
+          const span = document.createElement('span');
+          span.innerText = getItemLabel(type);
+          span.className = 'text-3xl bounce';
+          span.style.cursor = 'pointer';
+          span.title = getItemName(type);
+          field.appendChild(span);
+        });
+      }
+    }
+    
+    function getItemName(type) {
+      const names = {
+        apple: 'شجرة تفاح',
+        palm: 'نخلة',
+        pine: 'شجرة صنوبر',
+        gold: 'ذهب',
+        silver: 'فضة',
+        sapphire: 'ياقوت',
+        arcane: 'حجر أركاني'
+      };
+      return names[type] || 'عنصر غير معروف';
+    }
+
+    function resetAll() {
+      if (confirm("هل أنت متأكد أنك تريد حذف كل البيانات؟")) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    // تهيئة الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+      displayTasks();
+      renderField();
+      updateScore();
+      
+      // إضافة تأثير عند التحميل
+      document.querySelectorAll('.fade-in').forEach((el, index) => {
+        el.style.animationDelay = `${index * 0.1}s`;
+      });
+    });
+  </script>
+</body>
                                            </html>
