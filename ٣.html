@@ -1,42 +1,209 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📅 مهام الأسبوع</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: 'Cairo', sans-serif;
     }
-    .task-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .task-item input[type="checkbox"] {
-      transform: scale(1.2);
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .animate-pulse {
+      animation: pulse 0.5s ease-in-out;
+    }
+    
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out forwards;
+    }
+    
+    .task-completed {
+      text-decoration: line-through;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+    
+    .progress-bar {
+      transition: width 0.5s ease-in-out;
+    }
+    
+    .day-card {
+      transition: all 0.3s ease;
+    }
+    
+    .day-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* تحسين مظهر شريط التمرير */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #c5c5c5;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen p-6">
-  <h1 class="text-3xl text-center font-bold text-blue-800 mb-6">📅 مهام الأسبوع</h1>  <div class="text-center mb-6">
-    <button onclick="resetAllTasks()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">🔄 إعادة تعيين المهام</button>
-  </div>  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto" id="weekGrid">
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen p-4 md:p-6">
+  <!-- منطقة الإشعارات -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 max-w-xs"></div>
+  
+  <!-- رأس الصفحة -->
+  <header class="max-w-4xl mx-auto mb-6 animate-fade-in">
+    <h1 class="text-3xl md:text-4xl text-center font-bold text-blue-800 mb-4">📅 مهام الأسبوع</h1>
+    
+    <!-- شريط التقدم -->
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+      <div class="flex justify-between items-center mb-2">
+        <span class="font-semibold text-blue-700">التقدم الأسبوعي</span>
+        <span id="progressPercentage" class="font-bold text-blue-800">0%</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-4">
+        <div id="progressBar" class="progress-bar h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600" style="width: 0%"></div>
+      </div>
+      <div class="mt-2 text-sm text-gray-600 text-center">
+        <span id="completedTasksCount">0</span> من <span id="totalTasksCount">0</span> مهام مكتملة
+      </div>
+    </div>
+    
+    <!-- أزرار التحكم -->
+    <div class="flex flex-wrap gap-2 justify-center">
+      <button onclick="resetAllTasks()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2">
+        <i class="fas fa-redo"></i> إعادة تعيين الكل
+      </button>
+      <button onclick="addSampleTasks()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2">
+        <i class="fas fa-magic"></i> إضافة مهام نموذجية
+      </button>
+      <button onclick="clearAllTasks()" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition flex items-center gap-2">
+        <i class="fas fa-trash"></i> حذف جميع المهام
+      </button>
+      <button onclick="toggleViewMode()" id="viewToggle" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center gap-2">
+        <i class="fas fa-list"></i> عرض المكتملة فقط
+      </button>
+    </div>
+  </header>
+
+  <!-- شبكة أيام الأسبوع -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto" id="weekGrid">
     <!-- ستملأ بالجافاسكربت -->
-  </div>  <div class="text-center mt-8">
-    <a href="index.html" class="text-blue-700 underline">🔙 العودة إلى الصفحة الرئيسية</a>
-  </div>  <script>
+  </div>
+
+  <!-- منطقة المهام المكتملة -->
+  <div class="max-w-6xl mx-auto mt-8 bg-white rounded-xl shadow-md p-4 animate-fade-in" id="completedTasksSection" style="display: none;">
+    <h2 class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2">
+      <i class="fas fa-check-circle"></i> المهام المكتملة
+    </h2>
+    <div id="completedTasksList" class="space-y-2">
+      <!-- سيتم ملؤها بالجافاسكربت -->
+    </div>
+  </div>
+
+  <!-- تذييل الصفحة -->
+  <footer class="text-center mt-8 mb-4">
+    <a href="index.html" class="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-blue-50 transition">
+      <i class="fas fa-arrow-right"></i> العودة إلى الصفحة الرئيسية
+    </a>
+    <p class="mt-4 text-sm text-gray-600">مهام الأسبوع - أداة التنظيم الشخصي</p>
+  </footer>
+
+  <!-- الأصوات -->
+  <audio id="completeSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5d60b02f83.mp3"></audio>
+  <audio id="addSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_72998c3d96.mp3"></audio>
+  <audio id="deleteSound" src="https://cdn.pixabay.com/audio/2022/03/19/audio_7b607d7130.mp3"></audio>
+
+  <script>
     const weekDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     let weeklyTasks = JSON.parse(localStorage.getItem('weeklyTasks')) || {};
+    let showCompletedOnly = false;
+    let showAllTasks = true;
+
+    // عناصر الصوت
+    const completeSound = document.getElementById("completeSound");
+    const addSound = document.getElementById("addSound");
+    const deleteSound = document.getElementById("deleteSound");
+
+    // دالة لعرض الإشعارات
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'error' ? 'bg-red-500' : 
+                     type === 'success' ? 'bg-green-500' : 'bg-blue-500';
+      
+      toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg transition-all duration-300 opacity-0 transform translate-y-2`;
+      toast.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // إظهار الإشعار بتحريكه
+      setTimeout(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100');
+      }, 10);
+      
+      // إخفاء الإشعار بعد 3 ثوان
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toastContainer.removeChild(toast);
+          }
+        }, 300);
+      }, 3000);
+    }
 
     function saveWeeklyTasks() {
       localStorage.setItem('weeklyTasks', JSON.stringify(weeklyTasks));
+      updateProgress();
     }
 
     function toggleTaskStatus(day, index) {
       weeklyTasks[day][index].done = !weeklyTasks[day][index].done;
+      if (weeklyTasks[day][index].done) {
+        completeSound.play();
+        showToast("أحسنت! لقد أكملت المهمة بنجاح", "success");
+      }
       saveWeeklyTasks();
       renderTasks();
     }
@@ -44,49 +211,248 @@
     function addTask(day, inputId) {
       const input = document.getElementById(inputId);
       const text = input.value.trim();
-      if (!text) return;
+      if (!text) {
+        input.classList.add('animate-pulse');
+        setTimeout(() => input.classList.remove('animate-pulse'), 500);
+        return;
+      }
+      
       if (!weeklyTasks[day]) weeklyTasks[day] = [];
       weeklyTasks[day].push({ text, done: false });
       input.value = '';
+      addSound.play();
+      showToast("تم إضافة المهمة بنجاح", "success");
       saveWeeklyTasks();
       renderTasks();
     }
 
-    function resetAllTasks() {
-      if (confirm('هل أنت متأكد أنك تريد إعادة تعيين كل المهام؟')) {
-        localStorage.removeItem('weeklyTasks');
-        weeklyTasks = {};
+    function deleteTask(day, index) {
+      if (confirm('هل أنت متأكد من حذف هذه المهمة؟')) {
+        weeklyTasks[day].splice(index, 1);
+        if (weeklyTasks[day].length === 0) {
+          delete weeklyTasks[day];
+        }
+        deleteSound.play();
+        showToast("تم حذف المهمة", "info");
+        saveWeeklyTasks();
         renderTasks();
+      }
+    }
+
+    function resetAllTasks() {
+      if (confirm('هل أنت متأكد أنك تريد إعادة تعيين كل المهام؟ سيتم إلغاء إكمال جميع المهام ولكن لن يتم حذفها.')) {
+        for (const day in weeklyTasks) {
+          weeklyTasks[day].forEach(task => task.done = false);
+        }
+        showToast("تم إعادة تعيين جميع المهام", "info");
+        saveWeeklyTasks();
+        renderTasks();
+      }
+    }
+
+    function clearAllTasks() {
+      if (confirm('هل أنت متأكد أنك تريد حذف جميع المهام؟ لا يمكن التراجع عن هذا الإجراء.')) {
+        weeklyTasks = {};
+        showToast("تم حذف جميع المهام", "info");
+        saveWeeklyTasks();
+        renderTasks();
+      }
+    }
+
+    function addSampleTasks() {
+      const sampleTasks = {
+        'الأحد': [
+          { text: 'مراجعة أهداف الأسبوع', done: false },
+          { text: 'التخطيط للوجبات الأسبوعية', done: false }
+        ],
+        'الاثنين': [
+          { text: 'الذهاب إلى الصالة الرياضية', done: false },
+          { text: 'الرد على الرسائل المهمة', done: false }
+        ],
+        'الثلاثاء': [
+          { text: 'قراءة كتاب لمدة 30 دقيقة', done: false },
+          { text: 'تنظيف المكتب', done: false }
+        ],
+        'الأربعاء': [
+          { text: 'مكالمة مع العائلة', done: false },
+          { text: 'تقييم التقدم الأسبوعي', done: false }
+        ],
+        'الخميس': [
+          { text: 'تحضير لعطلة نهاية الأسبوع', done: false },
+          { text: 'القيام بمشروع شخصي', done: false }
+        ],
+        'الجمعة': [
+          { text: 'الخروج مع الأصدقاء', done: false },
+          { text: 'الاسترخاء والتأمل', done: false }
+        ],
+        'السبت': [
+          { text: 'تنظيف المنزل', done: false },
+          { text: 'التخطيط للأسبوع القادم', done: false }
+        ]
+      };
+
+      // دمج المهام النموذجية مع المهام الحالية
+      for (const day in sampleTasks) {
+        if (!weeklyTasks[day]) {
+          weeklyTasks[day] = [];
+        }
+        sampleTasks[day].forEach(task => {
+          // تجنب التكرار
+          if (!weeklyTasks[day].some(t => t.text === task.text)) {
+            weeklyTasks[day].push(task);
+          }
+        });
+      }
+
+      addSound.play();
+      showToast("تم إضافة المهام النموذجية", "success");
+      saveWeeklyTasks();
+      renderTasks();
+    }
+
+    function toggleViewMode() {
+      showCompletedOnly = !showCompletedOnly;
+      const button = document.getElementById('viewToggle');
+      
+      if (showCompletedOnly) {
+        button.innerHTML = '<i class="fas fa-eye"></i> عرض جميع المهام';
+        showToast("عرض المهام المكتملة فقط", "info");
+      } else {
+        button.innerHTML = '<i class="fas fa-list"></i> عرض المكتملة فقط';
+        showToast("عرض جميع المهام", "info");
+      }
+      
+      renderTasks();
+    }
+
+    function updateProgress() {
+      let totalTasks = 0;
+      let completedTasks = 0;
+      
+      for (const day in weeklyTasks) {
+        totalTasks += weeklyTasks[day].length;
+        completedTasks += weeklyTasks[day].filter(task => task.done).length;
+      }
+      
+      const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+      
+      document.getElementById('progressPercentage').textContent = `${percentage}%`;
+      document.getElementById('progressBar').style.width = `${percentage}%`;
+      document.getElementById('completedTasksCount').textContent = completedTasks;
+      document.getElementById('totalTasksCount').textContent = totalTasks;
+      
+      // تغيير لون شريط التقدم حسب النسبة
+      const progressBar = document.getElementById('progressBar');
+      if (percentage < 30) {
+        progressBar.className = 'progress-bar h-4 rounded-full bg-red-500';
+      } else if (percentage < 70) {
+        progressBar.className = 'progress-bar h-4 rounded-full bg-yellow-500';
+      } else {
+        progressBar.className = 'progress-bar h-4 rounded-full bg-green-500';
       }
     }
 
     function renderTasks() {
       const grid = document.getElementById('weekGrid');
       grid.innerHTML = '';
+      
+      const completedTasksContainer = document.getElementById('completedTasksList');
+      completedTasksContainer.innerHTML = '';
+      let hasCompletedTasks = false;
 
       weekDays.forEach((day, i) => {
         const tasks = weeklyTasks[day] || [];
-        const taskHtml = tasks.map((task, index) => `
-          <div class="task-item">
-            <input type="checkbox" id="${day}-task-${index}" ${task.done ? 'checked' : ''} onchange="toggleTaskStatus('${day}', ${index})">
-            <label for="${day}-task-${index}" class="${task.done ? 'line-through text-gray-500' : ''}">${task.text}</label>
-          </div>
-        `).join('');
+        const dayTasks = showCompletedOnly ? tasks.filter(task => task.done) : tasks;
+        
+        if (dayTasks.length === 0 && showCompletedOnly) {
+          return; // تخطي الأيام التي لا تحتوي على مهام مكتملة في وضع العرض المكتمل فقط
+        }
+
+        const taskHtml = dayTasks.map((task, index) => {
+          const actualIndex = tasks.findIndex(t => t.text === task.text);
+          return `
+            <div class="animate-slide-in task-item flex items-center justify-between gap-2 p-2 bg-gray-50 rounded-lg mb-2">
+              <div class="flex items-center gap-2 flex-1">
+                <input type="checkbox" id="${day}-task-${actualIndex}" ${task.done ? 'checked' : ''} 
+                  onchange="toggleTaskStatus('${day}', ${actualIndex})" class="transform scale-125">
+                <label for="${day}-task-${actualIndex}" class="${task.done ? 'task-completed' : ''} flex-1">${task.text}</label>
+              </div>
+              <button onclick="deleteTask('${day}', ${actualIndex})" class="text-red-500 hover:text-red-700 p-1">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        const completedTasksForDay = tasks.filter(task => task.done);
+        if (completedTasksForDay.length > 0) {
+          hasCompletedTasks = true;
+          completedTasksForDay.forEach((task, index) => {
+            completedTasksContainer.innerHTML += `
+              <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg">
+                <span class="task-completed">${task.text}</span>
+                <span class="text-sm text-green-600">${day}</span>
+              </div>
+            `;
+          });
+        }
 
         const card = document.createElement('div');
-        card.className = "bg-white rounded shadow-md p-4";
+        card.className = "day-card bg-white rounded-xl shadow-md p-4 animate-fade-in";
         card.innerHTML = `
-          <h2 class="text-xl font-bold mb-2 text-purple-700">${day}</h2>
-          <div>${taskHtml}</div>
-          <div class="flex gap-2 mt-4">
-            <input id="input-${i}" type="text" placeholder="مهمة جديدة" class="border p-2 rounded flex-1">
-            <button onclick="addTask('${day}', 'input-${i}')" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">➕</button>
+          <h2 class="text-xl font-bold mb-3 text-purple-700 flex items-center justify-between">
+            <span>${day}</span>
+            <span class="text-sm font-normal bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+              ${tasks.filter(t => t.done).length}/${tasks.length}
+            </span>
+          </h2>
+          <div class="mb-4 max-h-60 overflow-y-auto">${taskHtml}</div>
+          <div class="flex gap-2">
+            <input id="input-${i}" type="text" placeholder="أضف مهمة جديدة..." 
+              class="border border-gray-300 p-2 rounded-lg flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <button onclick="addTask('${day}', 'input-${i}')" 
+              class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+              <i class="fas fa-plus"></i>
+            </button>
           </div>
         `;
+        
         grid.appendChild(card);
       });
+
+      // إظهار أو إخفاء قسم المهام المكتملة
+      const completedSection = document.getElementById('completedTasksSection');
+      if (hasCompletedTasks && !showCompletedOnly) {
+        completedSection.style.display = 'block';
+      } else {
+        completedSection.style.display = 'none';
+      }
+      
+      // إذا لم يكن هناك أي مهام، إضافة رسالة
+      if (grid.innerHTML === '') {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-8">
+            <i class="fas fa-clipboard-list text-4xl text-gray-400 mb-4"></i>
+            <p class="text-gray-500">لا توجد مهام ${showCompletedOnly ? 'مكتملة' : 'مضافة'} بعد</p>
+            ${!showCompletedOnly ? '<button onclick="addSampleTasks()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">إضافة مهام نموذجية</button>' : ''}
+          </div>
+        `;
+      }
+      
+      updateProgress();
     }
 
-    renderTasks();
-  </script></body>
-</html>
+    // تهيئة الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+      renderTasks();
+      
+      // إضافة تأثيرات عند التحميل
+      setTimeout(() => {
+        document.querySelectorAll('.animate-fade-in').forEach((el, index) => {
+          el.style.animationDelay = `${index * 0.1}s`;
+        });
+      }, 100);
+    });
+  </script>
+</body>
+  </html>
