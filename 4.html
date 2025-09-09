@@ -1,24 +1,172 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎯 تحدي اليوم</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: 'Cairo', sans-serif;
     }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    
+    .animate-pulse {
+      animation: pulse 0.5s ease-in-out;
+    }
+    
+    .progress-bar {
+      animation: progress 2s ease-in-out;
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+    
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-red-100 to-yellow-50 min-h-screen p-6">
-  <h1 class="text-3xl text-center font-bold text-red-800 mb-6">🔥 تحدي اليوم</h1>  <div class="bg-white shadow-lg rounded p-6 max-w-md mx-auto text-center">
-    <p id="challengeText" class="text-xl text-gray-700 mb-4">جاري تحميل التحدي...</p>
-    <button id="completeBtn" onclick="completeChallenge()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">✅ أنهيت التحدي</button>
-    <div id="pointsMsg" class="mt-4 text-green-700 font-bold hidden">🎉 تمت إضافة <span id="challengePoints"></span> نقطة!</div>
-  </div>  <div class="text-center mt-6">
-    <a href="index.html" class="text-blue-700 underline">🔙 العودة إلى الصفحة الرئيسية</a>
-  </div>  <script>
+<body class="bg-gradient-to-br from-red-100 to-yellow-50 min-h-screen p-4 md:p-6">
+  <!-- منطقة الإشعارات -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 max-w-xs"></div>
+  
+  <!-- رأس الصفحة -->
+  <header class="max-w-2xl mx-auto mb-6 text-center animate-fade-in">
+    <h1 class="text-3xl md:text-4xl font-bold text-red-800 mb-2 flex items-center justify-center gap-2">
+      <i class="fas fa-fire floating text-red-600"></i> تحدي اليوم
+    </h1>
+    <p class="text-gray-600 mb-4">أكمل التحدي اليومي لتربح نقاطًا وتطور من مهاراتك!</p>
+    
+    <!-- معلومات التقدم -->
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+      <div class="flex justify-between items-center mb-2">
+        <span class="font-semibold text-red-700">التحديات المكتملة</span>
+        <span id="completedChallenges" class="font-bold text-red-800">0</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="font-semibold text-green-700">إجمالي النقاط</span>
+        <span id="totalPoints" class="font-bold text-green-800">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- بطاقة التحدي الرئيسية -->
+  <main class="max-w-2xl mx-auto">
+    <div class="bg-white shadow-lg rounded-xl p-6 text-center animate-fade-in" style="animation-delay: 0.2s">
+      <div class="mb-4">
+        <span class="text-sm text-gray-500">تحدي اليوم</span>
+        <p id="challengeText" class="text-xl md:text-2xl text-gray-800 font-medium my-4">جاري تحميل التحدي...</p>
+        <div class="flex items-center justify-center gap-2 text-yellow-600 mb-4">
+          <i class="fas fa-coins"></i>
+          <span id="challengePoints" class="font-bold">0</span>
+          <span>نقطة</span>
+        </div>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button id="completeBtn" onclick="completeChallenge()" class="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition flex items-center justify-center gap-2 font-medium">
+          <i class="fas fa-check-circle"></i> أنهيت التحدي
+        </button>
+        <button id="skipBtn" onclick="skipChallenge()" class="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 font-medium">
+          <i class="fas fa-forward"></i> تخطي التحدي
+        </button>
+      </div>
+      
+      <div id="successMessage" class="mt-6 p-4 bg-green-100 text-green-800 rounded-xl hidden">
+        <div class="flex items-center gap-2 justify-center">
+          <i class="fas fa-party-horn text-xl"></i>
+          <span class="font-bold">🎉 مبروك! لقد أكملت التحدي بنجاح</span>
+        </div>
+        <p class="mt-2">تمت إضافة <span id="pointsEarned" class="font-bold">0</span> نقطة إلى رصيدك</p>
+      </div>
+      
+      <div id="skipMessage" class="mt-6 p-4 bg-blue-100 text-blue-800 rounded-xl hidden">
+        <p class="flex items-center gap-2 justify-center">
+          <i class="fas fa-info-circle"></i> يمكنك تخطي تحدٍ واحد فقط في اليوم
+        </p>
+      </div>
+    </div>
+    
+    <!-- التحدي القادم -->
+    <div class="bg-white shadow-md rounded-xl p-4 mt-6 animate-fade-in" style="animation-delay: 0.4s">
+      <h3 class="text-lg font-bold text-gray-700 mb-2 flex items-center gap-2">
+        <i class="fas fa-calendar-day text-blue-600"></i> التحدي القادم
+      </h3>
+      <p id="nextChallenge" class="text-gray-600">جاري تحميل التحدي التالي...</p>
+      <div class="mt-2 text-sm text-gray-500">
+        يتجدد التحدي كل يوم في منتصف الليل
+      </div>
+    </div>
+    
+    <!-- تقدم اليوم -->
+    <div class="bg-white shadow-md rounded-xl p-4 mt-6 animate-fade-in" style="animation-delay: 0.6s">
+      <h3 class="text-lg font-bold text-gray-700 mb-2 flex items-center gap-2">
+        <i class="fas fa-chart-line text-green-600"></i> تقدم اليوم
+      </h3>
+      <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+        <div id="dailyProgress" class="h-2 rounded-full bg-green-500" style="width: 0%"></div>
+      </div>
+      <div class="flex justify-between text-sm text-gray-600 mt-2">
+        <span>0%</span>
+        <span id="progressPercent">0%</span>
+        <span>100%</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- تذييل الصفحة -->
+  <footer class="text-center mt-8 mb-4">
+    <a href="index.html" class="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-blue-50 transition">
+      <i class="fas fa-arrow-right"></i> العودة إلى الصفحة الرئيسية
+    </a>
+    <p class="mt-4 text-sm text-gray-600">أكمل التحديات اليومية لتحصل على نقاط أكثر وتطور مهاراتك</p>
+  </footer>
+
+  <!-- الأصوات -->
+  <audio id="completeSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5d60b02f83.mp3"></audio>
+  <audio id="pointsSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_72998c3d96.mp3"></audio>
+  <audio id="skipSound" src="https://cdn.pixabay.com/audio/2022/03/19/audio_7b607d7130.mp3"></audio>
+
+  <script>
+    // قائمة التحديات (98 تحديًا)
     const challenges = [
       { text: "راجع 10 صفحات من كتاب صعب 📖", points: 150 },
       { text: "احفظ 5 أحاديث جديدة من الأربعين النووية 🕋", points: 130 },
@@ -67,11 +215,274 @@
       { text: "اكتب قائمة بأهداف شهرية 🎯", points: 90 },
       { text: "صمّم بوربوينت تعليمي مبسط 🎞️", points: 110 },
       { text: "تعلم ميزة جديدة في جوجل أو يوتيوب 🔍", points: 90 },
-      { text: "استمع لمقطع تحفيزي وأعد تلخيصه 📻", points: 100 }
+      { text: "استمع لمقطع تحفيزي وأعد تلخيصه 📻", points: 100 },
+      // التحديات الجديدة (50 تحديًا)
+      { text: "تعلم 5 أوامر جديدة في سطر الأوامر ⌨️", points: 120 },
+      { text: "أنشئ قائمة قراءة لـ 5 كتب لهذا الشهر 📚", points: 90 },
+      { text: "طوّر مهارة التركيز بالعمل لمدة 25 دقيقة بدون مقاطعة ⏱️", points: 110 },
+      { text: "تعلم تقنية جديدة للقراءة السريعة 📖", points: 100 },
+      { text: "أنشئ خطة مالية شخصية لهذا الشهر 💰", points: 130 },
+      { text: "احفظ 5 آيات عن الصبر والتحمل 🕌", points: 140 },
+      { text: "اقضِ 30 دقيقة في تعلم لغة برمجة جديدة 💻", points: 150 },
+      { text: "طوّر نموذج عمل لمشروعك المستقبلي 📊", points: 160 },
+      { text: "اقرأ 3 مقالات علمية في مجال تخصصك 🧪", points: 120 },
+      { text: "مارس اليوغا لمدة 20 دقيقة 🧘‍♂️", points: 100 },
+      { text: "أنشئ مدونة شخصية واكتب أول مقال فيها ✍️", points: 180 },
+      { text: "تعلم أساسيات التصوير الفوتوغرافي 📸", points: 130 },
+      { text: "طوّر مهارة الإلقاء بالتحدث أمام المرآة 🎤", points: 110 },
+      { text: "أنشئ قائمة بالأهداف السنوية 🎯", points: 100 },
+      { text: "احفظ 10 كلمات من لغة جديدة تريد تعلمها 🌍", points: 90 },
+      { text: "اقضِ ساعة بدون استخدام الهاتف 📵", points: 120 },
+      { text: "تعلم طبخة جديدة من ثقافة مختلفة 👨‍🍳", points: 110 },
+      { text: "اكتب رسالة شكر لشخص ساعدك في الماضي 💌", points: 100 },
+      { text: "أنشئ روتينًا صباحيًا لمدة 7 أيام ☀️", points: 150 },
+      { text: "احفظ سورة قصيرة مع تفسيرها 🕋", points: 140 },
+      { text: "تعلم أساسيات الإسعافات الأولية 🏥", points: 160 },
+      { text: "طوّر مهارة التفكير النقدي بتحليل مقال news 🔍", points: 130 },
+      { text: "اقرأ كتابًا لمؤلف من ثقافة مختلفة 🌏", points: 140 },
+      { text: "مارس العزف على آلة موسيقية لمدة 30 دقيقة 🎵", points: 150 },
+      { text: "أنشئ مخططًا لأحلامك وطموحاتك 🗺️", points: 120 },
+      { text: "تعلم تقنيات جديدة لإدارة الضغوط 😌", points: 110 },
+      { text: "اقضِ 30 دقيقة في الهواء الطلق 🌳", points: 90 },
+      { text: "احفظ 5 أحاديث عن الأخلاق الحسنة 📿", points: 130 },
+      { text: "طوّر مهارة التفاوض بممارسة مع صديق 💼", points: 140 },
+      { text: "أنشئ قائمة بالعادات السيئة لتتخلص منها 🚫", points: 100 },
+      { text: "تعلم أساسيات التداول في الأسواق المالية 📈", points: 160 },
+      { text: "اقرأ سيرة ناجح وأستخلص الدروس 📘", points: 120 },
+      { text: "مارس الرسم لمدة 30 دقيقة 🎨", points: 110 },
+      { text: "أنشئ قائمة بالشكر لـ 10 أشياء في حياتك 🙏", points: 100 },
+      { text: "تعلم تقنية جديدة للحفظ والاستذكار 🧠", points: 120 },
+      { text: "اقضِ يومًا كاملًا بتنفيذ خطة محددة مسبقًا 📋", points: 170 },
+      { text: "احفظ 5 عبارات تحفيزية بلغة أجنبية 💪", points: 110 },
+      { text: "طوّر مهارة الكتابة الإبداعية بقصة قصيرة 📝", points: 140 },
+      { text: "أنشئ قائمة بالكتب التي تريد قراءتها هذا العام 📚", points: 90 },
+      { text: "تعلم أساسيات التصميم الجرافيكي 🎨", points: 150 },
+      { text: "اقرأ عن حياة النبي محمد صلى الله عليه وسلم 📖", points: 160 },
+      { text: "مارس الرياضة في الهواء الطلق 🏞️", points: 120 },
+      { text: "أنشئ قائمة بالمهارات التي تريد تطويرها 🛠️", points: 100 },
+      { text: "تعلم تقنيات جديدة للتواصل الفعال 🗣️", points: 130 },
+      { text: "اقضِ 30 دقيقة في التخطيط لمستقبلك 🔮", points: 110 },
+      { text: "احفظ 5 آيات عن العلم والتعلم 📜", points: 140 },
+      { text: "طوّر مهارة القيادة بقراءة كتاب في القيادة 👑", points: 150 }
     ];
 
     let challenge = {};
+    let nextChallenge = {};
+    const completeSound = document.getElementById("completeSound");
+    const pointsSound = document.getElementById("pointsSound");
+    const skipSound = document.getElementById("skipSound");
 
+    // دالة لعرض الإشعارات
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const bgColor = type === 'error' ? 'bg-red-500' : 
+                     type === 'success' ? 'bg-green-500' : 'bg-blue-500';
+      
+      toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg transition-all duration-300 opacity-0 transform translate-y-2`;
+      toast.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // إظهار الإشعار بتحريكه
+      setTimeout(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100');
+      }, 10);
+      
+      // إخفاء الإشعار بعد 3 ثوان
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toastContainer.removeChild(toast);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // إنشاء تأثير احتفال
+    function createConfetti() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+      const container = document.body;
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animation = `confetti ${Math.random() * 3 + 2}s linear forwards`;
+        container.appendChild(confetti);
+        
+        setTimeout(() => {
+          if (confetti.parentNode) {
+            container.removeChild(confetti);
+          }
+        }, 5000);
+      }
+    }
+
+    function getTodayKey() {
+      const now = new Date();
+      return now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+    }
+
+    function getRandomChallenge() {
+      const randomIndex = Math.floor(Math.random() * challenges.length);
+      return challenges[randomIndex];
+    }
+
+    function updateStats() {
+      const completed = parseInt(localStorage.getItem('completedChallenges') || '0');
+      const totalPoints = parseInt(localStorage.getItem('totalChallengePoints') || '0');
+      
+      document.getElementById('completedChallenges').textContent = completed;
+      document.getElementById('totalPoints').textContent = totalPoints;
+    }
+
+    function showDailyChallenge() {
+      const todayKey = getTodayKey();
+      const lastKey = localStorage.getItem('lastChallengeKey');
+      const skipUsed = localStorage.getItem('skipUsed') === 'true';
+      
+      if (lastKey !== todayKey) {
+        // تحد جديد لهذا اليوم
+        const randomChallenge = getRandomChallenge();
+        localStorage.setItem('todayChallenge', JSON.stringify(randomChallenge));
+        localStorage.setItem('lastChallengeKey', todayKey);
+        localStorage.removeItem('challengeCompleted');
+        localStorage.removeItem('skipUsed');
+        
+        // تحضير التحدي التالي
+        let nextChal;
+        do {
+          nextChal = getRandomChallenge();
+        } while (nextChal.text === randomChallenge.text);
+        
+        localStorage.setItem('nextChallenge', JSON.stringify(nextChal));
+      }
+
+      challenge = JSON.parse(localStorage.getItem('todayChallenge'));
+      nextChallenge = JSON.parse(localStorage.getItem('nextChallenge'));
+      
+      document.getElementById("challengeText").textContent = challenge.text;
+      document.getElementById("challengePoints").textContent = challenge.points;
+      document.getElementById("nextChallenge").textContent = nextChallenge.text;
+
+      if (localStorage.getItem("challengeCompleted") === "yes") {
+        document.getElementById("completeBtn").disabled = true;
+        document.getElementById("completeBtn").innerHTML = '<i class="fas fa-check-double"></i> تم إكمال التحدي';
+        document.getElementById("successMessage").classList.remove("hidden");
+        document.getElementById("pointsEarned").textContent = challenge.points;
+        document.getElementById("dailyProgress").style.width = "100%";
+        document.getElementById("progressPercent").textContent = "100%";
+      }
+      
+      if (localStorage.getItem("skipUsed") === "true") {
+        document.getElementById("skipBtn").disabled = true;
+        document.getElementById("skipBtn").innerHTML = '<i class="fas fa-ban"></i> تم التخطي اليوم';
+        document.getElementById("skipMessage").classList.remove("hidden");
+      }
+      
+      updateStats();
+    }
+
+    function completeChallenge() {
+      if (localStorage.getItem("challengeCompleted") === "yes") {
+        showToast("لقد أكملت هذا التحدي مسبقًا اليوم", "info");
+        return;
+      }
+
+      let score = parseInt(localStorage.getItem("score") || "0");
+      let completedChallenges = parseInt(localStorage.getItem("completedChallenges") || "0");
+      let totalPoints = parseInt(localStorage.getItem("totalChallengePoints") || "0");
+      
+      score += challenge.points;
+      completedChallenges += 1;
+      totalPoints += challenge.points;
+      
+      localStorage.setItem("score", score);
+      localStorage.setItem("completedChallenges", completedChallenges);
+      localStorage.setItem("totalChallengePoints", totalPoints);
+      localStorage.setItem("challengeCompleted", "yes");
+
+      document.getElementById("pointsEarned").textContent = challenge.points;
+      document.getElementById("successMessage").classList.remove("hidden");
+      document.getElementById("completeBtn").disabled = true;
+      document.getElementById("completeBtn").innerHTML = '<i class="fas fa-check-double"></i> تم إكمال التحدي';
+      
+      // تأثير التقدم
+      document.getElementById("dailyProgress").style.width = "100%";
+      document.getElementById("progressPercent").textContent = "100%";
+      
+      // تشغيل الأصوات
+      completeSound.play();
+      setTimeout(() => {
+        pointsSound.play();
+      }, 500);
+      
+      // تأثير الاحتفال
+      createConfetti();
+      
+      // تحديث الإحصائيات
+      updateStats();
+      
+      showToast(`مبارك! لقد ربحت ${challenge.points} نقطة`, "success");
+    }
+
+    function skipChallenge() {
+      if (localStorage.getItem("skipUsed") === "true") {
+        showToast("لقد استخدمت فرصة التخطي اليوم بالفعل", "error");
+        return;
+      }
+
+      if (localStorage.getItem("challengeCompleted") === "yes") {
+        showToast("لا يمكنك تخطي تحدي قد أكملته بالفعل", "error");
+        return;
+      }
+
+      localStorage.setItem("skipUsed", "true");
+      
+      // اختيار تحدي جديد
+      let newChallenge;
+      do {
+        newChallenge = getRandomChallenge();
+      } while (newChallenge.text === challenge.text);
+      
+      localStorage.setItem('todayChallenge', JSON.stringify(newChallenge));
+      challenge = newChallenge;
+      
+      document.getElementById("challengeText").textContent = challenge.text;
+      document.getElementById("challengePoints").textContent = challenge.points;
+      document.getElementById("skipBtn").disabled = true;
+      document.getElementById("skipBtn").innerHTML = '<i class="fas fa-ban"></i> تم التخطي اليوم';
+      document.getElementById("skipMessage").classList.remove("hidden");
+      
+      skipSound.play();
+      showToast("تم تخطي التحدي بنجاح، لديك تحدي جديد!", "info");
+    }
+
+    // تهيئة الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+      showDailyChallenge();
+      
+      // إضافة تأثيرات عند التحميل
+      setTimeout(() => {
+        document.querySelectorAll('.animate-fade-in').forEach((el, index) => {
+          el.style.animationDelay = `${index * 0.1}s`;
+        });
+      }, 100);
+    });
+  </script>
+</body>
+  </html>
     function getTodayKey() {
       const now = new Date();
       return now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
