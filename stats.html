@@ -1,35 +1,348 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إحصائيات المهام</title>
+  <title>📊 إحصائيات المهام</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: 'Cairo', sans-serif; }
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    
+    .animate-slide-in {
+      animation: slideIn 0.4s ease-out forwards;
+    }
+    
+    .stat-card {
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .progress-bar {
+      transition: width 1s ease-in-out;
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen p-6">
-  <h1 class="text-3xl font-bold text-center text-purple-800 mb-6">📊 إحصائيات المهام</h1>  <div class="bg-white shadow rounded p-4 max-w-md mx-auto space-y-4 text-right">
-    <div><strong>عدد المهام المكتملة:</strong> <span id="completedTasks">0</span></div>
-    <div><strong>إجمالي الوقت المتوقع:</strong> <span id="totalTime">0</span> دقيقة</div>
-    <div><strong>متوسط الصعوبة:</strong> <span id="averageDifficulty">0</span></div>
-    <div><strong>إجمالي النقاط:</strong> <span id="totalScore">0</span></div>
-  </div>  <div class="text-center mt-6">
-    <a href="index.html" class="text-blue-700 underline">🔙 العودة إلى الصفحة الرئيسية</a>
-  </div>  <script>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen p-4 md:p-6">
+  <!-- رأس الصفحة -->
+  <header class="max-w-6xl mx-auto mb-8 text-center animate-fade-in">
+    <h1 class="text-3xl md:text-4xl font-bold text-purple-800 mb-2 flex items-center justify-center gap-2">
+      <i class="fas fa-chart-line"></i> إحصائيات المهام
+    </h1>
+    <p class="text-gray-600">تابع تقدمك وأداءك في إنجاز المهام</p>
+  </header>
+
+  <main class="max-w-6xl mx-auto">
+    <!-- بطاقات الإحصائيات الرئيسية -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="stat-card bg-white rounded-xl shadow-md p-4 text-center animate-fade-in" style="animation-delay: 0.1s">
+        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-check-circle text-2xl text-blue-600"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-700">المهام المكتملة</h3>
+        <p class="text-3xl font-bold text-blue-700 mt-2" id="completedTasks">0</p>
+        <p class="text-sm text-gray-500 mt-1">من أصل <span id="totalTasks">0</span> مهمة</p>
+      </div>
+
+      <div class="stat-card bg-white rounded-xl shadow-md p-4 text-center animate-fade-in" style="animation-delay: 0.2s">
+        <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-clock text-2xl text-green-600"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-700">إجمالي الوقت</h3>
+        <p class="text-3xl font-bold text-green-700 mt-2" id="totalTime">0</p>
+        <p class="text-sm text-gray-500 mt-1">دقيقة من العمل</p>
+      </div>
+
+      <div class="stat-card bg-white rounded-xl shadow-md p-4 text-center animate-fade-in" style="animation-delay: 0.3s">
+        <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-star text-2xl text-yellow-600"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-700">متوسط الصعوبة</h3>
+        <p class="text-3xl font-bold text-yellow-700 mt-2" id="averageDifficulty">0</p>
+        <p class="text-sm text-gray-500 mt-1">من 5 نقاط</p>
+      </div>
+
+      <div class="stat-card bg-white rounded-xl shadow-md p-4 text-center animate-fade-in" style="animation-delay: 0.4s">
+        <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-coins text-2xl text-purple-600"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-700">إجمالي النقاط</h3>
+        <p class="text-3xl font-bold text-purple-700 mt-2" id="totalScore">0</p>
+        <p class="text-sm text-gray-500 mt-1">نقطة مكتسبة</p>
+      </div>
+    </div>
+
+    <!-- الرسوم البيانية والإحصائيات التفصيلية -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- رسم بياني لتوزيع المهام حسب الصعوبة -->
+      <div class="bg-white rounded-xl shadow-md p-4 md:p-6 animate-fade-in" style="animation-delay: 0.5s">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-chart-pie"></i> توزيع المهام حسب الصعوبة
+        </h2>
+        <div class="h-64">
+          <canvas id="difficultyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- رسم بياني للمهام المكتملة vs غير المكتملة -->
+      <div class="bg-white rounded-xl shadow-md p-4 md:p-6 animate-fade-in" style="animation-delay: 0.6s">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-chart-bar"></i> حالة المهام
+        </h2>
+        <div class="h-64">
+          <canvas id="completionChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- إحصائيات إضافية -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- تقدم إنجاز المهام -->
+      <div class="bg-white rounded-xl shadow-md p-4 md:p-6 animate-fade-in" style="animation-delay: 0.7s">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-tasks"></i> تقدم إنجاز المهام
+        </h2>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">مستوى الإنجاز</span>
+              <span class="text-sm font-medium text-gray-700" id="completionRate">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div id="completionProgress" class="progress-bar h-2.5 rounded-full bg-green-500" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">معدل الإنتاجية</span>
+              <span class="text-sm font-medium text-gray-700" id="productivityRate">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div id="productivityProgress" class="progress-bar h-2.5 rounded-full bg-blue-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- المهام الأخيرة -->
+      <div class="bg-white rounded-xl shadow-md p-4 md:p-6 animate-fade-in" style="animation-delay: 0.8s">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-history"></i> أحدث المهام المكتملة
+        </h2>
+        <div class="space-y-3" id="recentTasks">
+          <p class="text-gray-500 text-center py-4">لا توجد مهام مكتملة بعد</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- أزرار التحكم -->
+    <div class="flex flex-wrap gap-3 justify-center mb-8">
+      <button onclick="resetAllData()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2">
+        <i class="fas fa-trash"></i> مسح جميع البيانات
+      </button>
+      <button onclick="exportData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+        <i class="fas fa-download"></i> تصدير البيانات
+      </button>
+      <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition flex items-center gap-2">
+        <i class="fas fa-print"></i> طباعة التقرير
+      </button>
+    </div>
+  </main>
+
+  <!-- تذييل الصفحة -->
+  <footer class="text-center mt-8 mb-4">
+    <a href="index.html" class="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-blue-50 transition">
+      <i class="fas fa-arrow-right"></i> العودة إلى الصفحة الرئيسية
+    </a>
+    <p class="mt-4 text-sm text-gray-600">إحصائيات المهام - أداة متابعة الأداء والإنتاجية</p>
+  </footer>
+
+  <script>
+    // الحصول على البيانات من localStorage
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     const score = parseInt(localStorage.getItem("score")) || 0;
+    const weeklyTasks = JSON.parse(localStorage.getItem('weeklyTasks')) || {};
+    const completedChallenges = parseInt(localStorage.getItem('completedChallenges') || '0');
+    const challengePoints = parseInt(localStorage.getItem('totalChallengePoints') || '0');
 
-    const completed = tasks.filter(t => t.completed);
-    const totalTime = completed.reduce((acc, t) => acc + (t.time || 0), 0);
-    const avgDifficulty = completed.length
-      ? (completed.reduce((acc, t) => acc + (t.difficulty || 0), 0) / completed.length).toFixed(1)
+    // حساب الإحصائيات
+    const completedTasks = tasks.filter(t => t.completed);
+    const totalTime = completedTasks.reduce((acc, t) => acc + (t.time || 0), 0);
+    const avgDifficulty = completedTasks.length
+      ? (completedTasks.reduce((acc, t) => acc + (t.difficulty || 0), 0) / completedTasks.length).toFixed(1)
       : 0;
+    
+    const completionRate = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
+    
+    // حساب توزيع الصعوبة
+    const difficultyDistribution = {
+      "سهلة": completedTasks.filter(t => t.difficulty === 1).length,
+      "سهلة قليلاً": completedTasks.filter(t => t.difficulty === 2).length,
+      "متوسطة": completedTasks.filter(t => t.difficulty === 3).length,
+      "صعبة": completedTasks.filter(t => t.difficulty === 4).length,
+      "صعبة جدًا": completedTasks.filter(t => t.difficulty === 5).length
+    };
 
-    document.getElementById("completedTasks").textContent = completed.length;
+    // تحديث واجهة المستخدم
+    document.getElementById("completedTasks").textContent = completedTasks.length;
+    document.getElementById("totalTasks").textContent = tasks.length;
     document.getElementById("totalTime").textContent = totalTime;
     document.getElementById("averageDifficulty").textContent = avgDifficulty;
-    document.getElementById("totalScore").textContent = score;
-  </script></body>
+    document.getElementById("totalScore").textContent = score + challengePoints;
+    document.getElementById("completionRate").textContent = completionRate + "%";
+    document.getElementById("completionProgress").style.width = completionRate + "%";
+    
+    // حساب معدل الإنتاجية (مزيج من إكمال المهام والتحديات)
+    const productivityRate = Math.min(100, Math.round((completedTasks.length + completedChallenges) / (tasks.length > 0 ? tasks.length : 1) * 20));
+    document.getElementById("productivityRate").textContent = productivityRate + "%";
+    document.getElementById("productivityProgress").style.width = productivityRate + "%";
+    
+    // عرض المهام الأخيرة
+    const recentTasksContainer = document.getElementById("recentTasks");
+    if (completedTasks.length > 0) {
+      recentTasksContainer.innerHTML = '';
+      const recentTasks = completedTasks.slice(-5).reverse();
+      
+      recentTasks.forEach(task => {
+        const taskEl = document.createElement('div');
+        taskEl.className = 'flex justify-between items-center p-2 bg-gray-50 rounded-lg';
+        taskEl.innerHTML = `
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-800">${task.name}</p>
+            <p class="text-xs text-gray-500">${task.time} دقيقة | صعوبة: ${task.difficulty}/5</p>
+          </div>
+          <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">مكتملة</span>
+        `;
+        recentTasksContainer.appendChild(taskEl);
+      });
+    }
+
+    // إنشاء الرسوم البيانية بعد تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      // رسم بياني لتوزيع الصعوبة
+      const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
+      new Chart(difficultyCtx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(difficultyDistribution),
+          datasets: [{
+            data: Object.values(difficultyDistribution),
+            backgroundColor: [
+              '#4ade80', '#a3e635', '#fde047', '#fb923c', '#ef4444'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              rtl: true,
+              labels: {
+                font: {
+                  family: 'Cairo'
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // رسم بياني لحالة المهام
+      const completionCtx = document.getElementById('completionChart').getContext('2d');
+      new Chart(completionCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['مكتملة', 'غير مكتملة'],
+          datasets: [{
+            data: [completedTasks.length, tasks.length - completedTasks.length],
+            backgroundColor: ['#10b981', '#e5e7eb'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              rtl: true,
+              labels: {
+                font: {
+                  family: 'Cairo'
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // تأثيرات التحميل
+      setTimeout(() => {
+        document.querySelectorAll('.animate-fade-in').forEach((el, index) => {
+          el.style.animationDelay = `${index * 0.1}s`;
+        });
+      }, 100);
+    });
+
+    // وظائف التحكم
+    function resetAllData() {
+      if (confirm('هل أنت متأكد من أنك تريد مسح جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء.')) {
+        localStorage.removeItem('tasks');
+        localStorage.removeItem('score');
+        localStorage.removeItem('weeklyTasks');
+        localStorage.removeItem('completedChallenges');
+        localStorage.removeItem('totalChallengePoints');
+        alert('تم مسح جميع البيانات بنجاح');
+        location.reload();
+      }
+    }
+
+    function exportData() {
+      const data = {
+        tasks: tasks,
+        score: score,
+        weeklyTasks: weeklyTasks,
+        completedChallenges: completedChallenges,
+        challengePoints: challengePoints,
+        generatedAt: new Date().toLocaleString('ar-SA')
+      };
+      
+      const dataStr = JSON.stringify(data, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `إحصائيات_مهام_${new Date().toISOString().split('T')[0]}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+    }
+  </script>
+</body>
 </html>
