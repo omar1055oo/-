@@ -1,40 +1,734 @@
-<!DOCTYPE html><html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>الإنجازات</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: 'Cairo', sans-serif; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    .header-gradient {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    }
+    
+    .achievement-card {
+      transition: all 0.3s ease;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeInUp 0.6s forwards;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .progress-bar {
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      background-color: #e9ecef;
+    }
+    
+    .progress-value {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 1s ease-in-out;
+    }
+    
+    .trophy-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    .achievement-card:hover .trophy-icon {
+      transform: rotate(15deg) scale(1.2);
+    }
+    
+    .morning-theme {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    }
+    
+    .evening-theme {
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    }
+    
+    .time-badge {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+    
+    .morning-badge {
+      background: linear-gradient(135deg, #FF512F 0%, #F09819 100%);
+    }
+    
+    .evening-badge {
+      background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
+    }
+    
+    .stats-card {
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .stats-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .tab-button {
+      transition: all 0.3s ease;
+      border-radius: 10px;
+    }
+    
+    .tab-button.active {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
+    }
+    
+    .achievement-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .ribbon {
+      position: relative;
+      padding: 8px 25px;
+      background: #6a11cb;
+      color: white;
+      margin: 0 auto 30px;
+      display: inline-block;
+      text-align: center;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    }
+    
+    .ribbon:before, .ribbon:after {
+      content: "";
+      position: absolute;
+      display: block;
+      bottom: -10px;
+      border: 15px solid #4e0bac;
+      z-index: -1;
+    }
+    
+    .ribbon:before {
+      left: -30px;
+      border-right-width: 10px;
+      border-left-color: transparent;
+    }
+    
+    .ribbon:after {
+      right: -30px;
+      border-left-width: 10px;
+      border-right-color: transparent;
+    }
+    
+    .back-button {
+      transition: all 0.3s ease;
+      border-radius: 50px;
+      box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
+    }
+    
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(37, 117, 252, 0.4);
+    }
+    
+    .category-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      padding: 3px 8px;
+      border-radius: 15px;
+      font-size: 10px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .tasks-badge { background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); }
+    .points-badge { background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); }
+    .consistency-badge { background: linear-gradient(135deg, #2196F3 0%, #0D47A1 100%); }
+    .special-badge { background: linear-gradient(135deg, #9C27B0 0%, #4A148C 100%); }
   </style>
 </head>
-<body class="bg-gradient-to-br from-yellow-100 to-pink-100 min-h-screen p-6">
-  <h1 class="text-3xl font-bold text-center text-pink-800 mb-6">🏆 الإنجازات</h1>  <div class="bg-white shadow rounded p-4 max-w-md mx-auto space-y-4 text-right" id="achievementsBox">
-    <!-- الإنجازات ستُضاف هنا تلقائياً -->
-  </div>  <div class="text-center mt-6">
-    <a href="index.html" class="text-blue-700 underline">🔙 العودة إلى الصفحة الرئيسية</a>
-  </div>  <script>
+<body class="min-h-screen p-4 pt-8">
+  <div class="max-w-6xl mx-auto container p-6">
+    <!-- رأس الصفحة -->
+    <div class="text-center mb-10">
+      <div class="ribbon text-xl font-bold">
+        <i class="fas fa-trophy mr-2"></i> نظام الإنجازات
+      </div>
+      
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">إنجازاتي <i class="fas fa-medal text-yellow-500"></i></h1>
+      <p class="text-gray-600">تابع تقدمك وانجازاتك في رحلتك اليومية</p>
+      
+      <!-- أزرار التبويب -->
+      <div class="flex flex-wrap justify-center gap-2 mt-6">
+        <button id="tabAll" class="tab-button active px-4 py-2 font-semibold">جميع الإنجازات</button>
+        <button id="tabTasks" class="tab-button px-4 py-2 font-semibold">المهام</button>
+        <button id="tabPoints" class="tab-button px-4 py-2 font-semibold">النقاط</button>
+        <button id="tabConsistency" class="tab-button px-4 py-2 font-semibold">الانتظام</button>
+        <button id="tabSpecial" class="tab-button px-4 py-2 font-semibold">إنجازات خاصة</button>
+      </div>
+      
+      <!-- شريط التقدم -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8 mt-6">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-lg font-semibold text-gray-700">تقدمك العام</span>
+          <span class="text-lg font-bold text-blue-600" id="progressPercentage">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-value bg-gradient-to-r from-blue-500 to-purple-600 w-0" id="globalProgress"></div>
+        </div>
+        <div class="flex justify-between mt-3 text-sm text-gray-600">
+          <span>مبتدئ</span>
+          <span>محترف</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- إحصائيات سريعة -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+      <div class="stats-card bg-white p-4 text-center">
+        <div class="text-2xl text-blue-600 mb-2"><i class="fas fa-check-circle"></i></div>
+        <h3 class="font-bold text-gray-800">المهام المكتملة</h3>
+        <p class="text-2xl font-bold text-gray-700" id="completedTasks">0</p>
+      </div>
+      
+      <div class="stats-card bg-white p-4 text-center">
+        <div class="text-2xl text-orange-500 mb-2"><i class="fas fa-sun"></i></div>
+        <h3 class="font-bold text-gray-800">المهام الصباحية</h3>
+        <p class="text-2xl font-bold text-gray-700" id="morningTasks">0</p>
+      </div>
+      
+      <div class="stats-card bg-white p-4 text-center">
+        <div class="text-2xl text-indigo-500 mb-2"><i class="fas fa-moon"></i></div>
+        <h3 class="font-bold text-gray-800">المهام المسائية</h3>
+        <p class="text-2xl font-bold text-gray-700" id="eveningTasks">0</p>
+      </div>
+      
+      <div class="stats-card bg-white p-4 text-center">
+        <div class="text-2xl text-green-500 mb-2"><i class="fas fa-star"></i></div>
+        <h3 class="font-bold text-gray-800">النقاط</h3>
+        <p class="text-2xl font-bold text-gray-700" id="totalPoints">0</p>
+      </div>
+    </div>
+    
+    <!-- قائمة الإنجازات -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">إنجازاتي <i class="fas fa-award text-yellow-500"></i></h2>
+    <div class="space-y-5" id="achievementsContainer">
+      <!-- سيتم إضافة الإنجازات هنا ديناميكيًا -->
+    </div>
+    
+    <!-- رسالة عندما لا توجد إنجازات -->
+    <div id="noAchievementsMessage" class="text-center py-10 hidden">
+      <div class="text-5xl text-gray-300 mb-4"><i class="fas fa-trophy"></i></div>
+      <h3 class="text-xl font-bold text-gray-500">لا توجد إنجازات بعد</h3>
+      <p class="text-gray-500">استمر في إكمال المهام لتحصل على إنجازات جديدة!</p>
+    </div>
+    
+    <!-- زر العودة -->
+    <div class="text-center mt-12">
+      <a href="index.html" class="back-button inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-full shadow-md">
+        <i class="fas fa-arrow-right ml-2"></i> العودة إلى الصفحة الرئيسية
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // بيانات المثال (سيتم استبدالها بالبيانات الفعلية من localStorage)
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     const score = parseInt(localStorage.getItem("score")) || 0;
     const items = JSON.parse(localStorage.getItem("items")) || [];
-
-    const completedCount = tasks.filter(t => t.completed).length;
-
+    
+    // حساب المهام الصباحية والمسائية (الصباح من 5 صباحًا إلى 5 مساءً)
+    let morningTasks = 0;
+    let eveningTasks = 0;
+    
+    tasks.forEach(task => {
+      if (task.completed && task.completionTime) {
+        const completionTime = new Date(task.completionTime);
+        const hour = completionTime.getHours();
+        
+        // الصباح من الساعة 5:00 إلى 16:59 (5 صباحًا إلى 5 مساءً)
+        if (hour >= 5 && hour < 17) {
+          morningTasks++;
+        } else {
+          eveningTasks++;
+        }
+      }
+    });
+    
+    const completedTasks = tasks.filter(task => task.completed).length;
+    const totalTasks = tasks.length;
+    const progressPercentage = totalTasks > 0 ? Math.min(100, Math.round((completedTasks / totalTasks) * 100)) : 0;
+    
+    // تحديث الإحصائيات
+    document.getElementById('completedTasks').textContent = completedTasks;
+    document.getElementById('morningTasks').textContent = morningTasks;
+    document.getElementById('eveningTasks').textContent = eveningTasks;
+    document.getElementById('totalPoints').textContent = score;
+    document.getElementById('progressPercentage').textContent = `${progressPercentage}%`;
+    document.getElementById('globalProgress').style.width = `${progressPercentage}%`;
+    
+    // إنشاء الإنجازات بناءً على البيانات
     const achievements = [
-      { label: "مبتدئ المهام ✅", condition: completedCount >= 1 },
-      { label: "💪 مجتهد - أنهيت 10 مهام", condition: completedCount >= 10 },
-      { label: "🏅 محترف - وصلت 500 نقطة", condition: score >= 500 },
-      { label: "🦾 أسطورة المهام - أنهيت 50 مهمة", condition: completedCount >= 50 },
-      { label: "💰 جامع الكنوز - اشتريت 5 عناصر", condition: items.length >= 5 },
-      { label: "👑 الملك - لديك 1000 نقطة", condition: score >= 1000 },
+      // إنجازات المهام (أصعب)
+      {
+        id: 1,
+        title: "المبتدئ الصبور",
+        description: "أكمل أول 10 مهام لك",
+        icon: "fas fa-seedling",
+        color: "text-green-500",
+        bgColor: "bg-green-100",
+        completed: completedTasks >= 10,
+        progress: Math.min(completedTasks, 10),
+        target: 10,
+        category: "tasks",
+        points: 20
+      },
+      {
+        id: 2,
+        title: "منتج متسق",
+        description: "أكمل 50 مهمة",
+        icon: "fas fa-leaf",
+        color: "text-teal-500",
+        bgColor: "bg-teal-100",
+        completed: completedTasks >= 50,
+        progress: Math.min(completedTasks, 50),
+        target: 50,
+        category: "tasks",
+        points: 50
+      },
+      {
+        id: 3,
+        title: "خبير الإنتاجية",
+        description: "أكمل 100 مهمة",
+        icon: "fas fa-tree",
+        color: "text-blue-500",
+        bgColor: "bg-blue-100",
+        completed: completedTasks >= 100,
+        progress: Math.min(completedTasks, 100),
+        target: 100,
+        category: "tasks",
+        points: 100
+      },
+      {
+        id: 4,
+        title: "أسطورة المهام",
+        description: "أكمل 250 مهمة",
+        icon: "fas fa-dragon",
+        color: "text-purple-500",
+        bgColor: "bg-purple-100",
+        completed: completedTasks >= 250,
+        progress: Math.min(completedTasks, 250),
+        target: 250,
+        category: "tasks",
+        points: 250
+      },
+      {
+        id: 5,
+        title: "بطل المهام",
+        description: "أكمل 500 مهمة",
+        icon: "fas fa-crown",
+        color: "text-yellow-500",
+        bgColor: "bg-yellow-100",
+        completed: completedTasks >= 500,
+        progress: Math.min(completedTasks, 500),
+        target: 500,
+        category: "tasks",
+        points: 500
+      },
+      
+      // إنجازات النقاط (أصعب)
+      {
+        id: 6,
+        title: "جامع النقاط",
+        description: "احصل على 100 نقطة",
+        icon: "fas fa-coins",
+        color: "text-yellow-500",
+        bgColor: "bg-yellow-100",
+        completed: score >= 100,
+        progress: Math.min(score, 100),
+        target: 100,
+        category: "points",
+        points: 20
+      },
+      {
+        id: 7,
+        title: "ثري النقاط",
+        description: "احصل على 500 نقطة",
+        icon: "fas fa-gem",
+        color: "text-purple-500",
+        bgColor: "bg-purple-100",
+        completed: score >= 500,
+        progress: Math.min(score, 500),
+        target: 500,
+        category: "points",
+        points: 50
+      },
+      {
+        id: 8,
+        title: "مليونير النقاط",
+        description: "احصل على 1000 نقطة",
+        icon: "fas fa-money-bill-wave",
+        color: "text-green-500",
+        bgColor: "bg-green-100",
+        completed: score >= 1000,
+        progress: Math.min(score, 1000),
+        target: 1000,
+        category: "points",
+        points: 100
+      },
+      {
+        id: 9,
+        title: "أغنى الأغنياء",
+        description: "احصل على 2500 نقطة",
+        icon: "fas fa-landmark",
+        color: "text-blue-500",
+        bgColor: "bg-blue-100",
+        completed: score >= 2500,
+        progress: Math.min(score, 2500),
+        target: 2500,
+        category: "points",
+        points: 250
+      },
+      {
+        id: 10,
+        title: "سلطان النقاط",
+        description: "احصل على 5000 نقطة",
+        icon: "fas fa-crown",
+        color: "text-red-500",
+        bgColor: "bg-red-100",
+        completed: score >= 5000,
+        progress: Math.min(score, 5000),
+        target: 5000,
+        category: "points",
+        points: 500
+      },
+      
+      // إنجازات الانتظام (أصعب)
+      {
+        id: 11,
+        title: "منتظم مبتدئ",
+        description: "أكمل مهام لمدة 3 أيام متتالية",
+        icon: "fas fa-calendar-check",
+        color: "text-blue-500",
+        bgColor: "bg-blue-100",
+        completed: false, // سيتم حساب هذا من البيانات الفعلية
+        progress: 0,
+        target: 3,
+        category: "consistency",
+        points: 30
+      },
+      {
+        id: 12,
+        title: "منتظم محترف",
+        description: "أكمل مهام لمدة 7 أيام متتالية",
+        icon: "fas fa-calendar-week",
+        color: "text-purple-500",
+        bgColor: "bg-purple-100",
+        completed: false,
+        progress: 0,
+        target: 7,
+        category: "consistency",
+        points: 70
+      },
+      {
+        id: 13,
+        title: "منتظم خارق",
+        description: "أكمل مهام لمدة 30 يوم متتالية",
+        icon: "fas fa-calendar-alt",
+        color: "text-red-500",
+        bgColor: "bg-red-100",
+        completed: false,
+        progress: 0,
+        target: 30,
+        category: "consistency",
+        points: 300
+      },
+      {
+        id: 14,
+        title: "مثابر قوي",
+        description: "أكمل مهام لمدة 90 يوم متتالية",
+        icon: "fas fa-fire",
+        color: "text-orange-500",
+        bgColor: "bg-orange-100",
+        completed: false,
+        progress: 0,
+        target: 90,
+        category: "consistency",
+        points: 900
+      },
+      {
+        id: 15,
+        title: "أسطورة الانتظام",
+        description: "أكمل مهام لمدة 365 يوم متتالية",
+        icon: "fas fa-infinity",
+        color: "text-indigo-500",
+        bgColor: "bg-indigo-100",
+        completed: false,
+        progress: 0,
+        target: 365,
+        category: "consistency",
+        points: 1000
+      },
+      
+      // إنجازات خاصة (أصعب)
+      {
+        id: 16,
+        title: "مشتري متميز",
+        description: "احصل على 10 عناصر من المتجر",
+        icon: "fas fa-shopping-bag",
+        color: "text-pink-500",
+        bgColor: "bg-pink-100",
+        completed: items.length >= 10,
+        progress: Math.min(items.length, 10),
+        target: 10,
+        category: "special",
+        points: 50
+      },
+      {
+        id: 17,
+        title: "تاجر محترف",
+        description: "احصل على 25 عنصر من المتجر",
+        icon: "fas fa-store",
+        color: "text-teal-500",
+        bgColor: "bg-teal-100",
+        completed: items.length >= 25,
+        progress: Math.min(items.length, 25),
+        target: 25,
+        category: "special",
+        points: 100
+      },
+      {
+        id: 18,
+        title: "مقتني التحف",
+        description: "احصل على 50 عنصر من المتجر",
+        icon: "fas fa-gem",
+        color: "text-amber-500",
+        bgColor: "bg-amber-100",
+        completed: items.length >= 50,
+        progress: Math.min(items.length, 50),
+        target: 50,
+        category: "special",
+        points: 250
+      },
+      {
+        id: 19,
+        title: "مكتمل المهام الليلية",
+        description: "أكمل 10 مهام بعد منتصف الليل",
+        icon: "fas fa-moon",
+        color: "text-indigo-500",
+        bgColor: "bg-indigo-100",
+        completed: false,
+        progress: 0,
+        target: 10,
+        category: "special",
+        points: 100
+      },
+      {
+        id: 20,
+        title: "بطل الصباح",
+        description: "أكمل 10 مهام قبل الساعة 8 صباحاً",
+        icon: "fas fa-sun",
+        color: "text-yellow-500",
+        bgColor: "bg-yellow-100",
+        completed: false,
+        progress: 0,
+        target: 10,
+        category: "special",
+        points: 100
+      },
+      {
+        id: 21,
+        title: "سيد عطلة نهاية الأسبوع",
+        description: "أكمل 20 مهمة خلال عطلة نهاية الأسبوع",
+        icon: "fas fa-umbrella-beach",
+        color: "text-orange-500",
+        bgColor: "bg-orange-100",
+        completed: false,
+        progress: 0,
+        target: 20,
+        category: "special",
+        points: 150
+      },
+      {
+        id: 22,
+        title: "مكتمل جميع الفئات",
+        description: "أكمل 5 مهام من كل فئة",
+        icon: "fas fa-tags",
+        color: "text-cyan-500",
+        bgColor: "bg-cyan-100",
+        completed: false,
+        progress: 0,
+        target: 5,
+        category: "special",
+        points: 200
+      }
     ];
-
-    const box = document.getElementById("achievementsBox");
-    achievements.forEach(a => {
-      const div = document.createElement("div");
-      div.className = "p-2 border-b";
-      div.textContent = a.condition ? a.label : "🔒 " + a.label;
+    
+    // تصفية الإنجازات حسب النوع
+    let currentFilter = "all";
+    
+    function filterAchievements(type) {
+      currentFilter = type;
+      renderAchievements();
+      
+      // تحديث حالة أزرار التبويب
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
+    }
+    
+    // عرض الإنجازات
+    function renderAchievements() {
+      const achievementsContainer = document.getElementById('achievementsContainer');
+      const noAchievementsMessage = document.getElementById('noAchievementsMessage');
+      const completedAchievements = achievements.filter(ach => ach.completed).length;
+      
+      // تصفية الإنجازات حسب النوع
+      const filteredAchievements = currentFilter === "all" 
+        ? achievements 
+        : achievements.filter(ach => ach.category === currentFilter);
+      
+      achievementsContainer.innerHTML = '';
+      
+      if (filteredAchievements.length === 0) {
+        noAchievementsMessage.classList.remove('hidden');
+      } else {
+        noAchievementsMessage.classList.add('hidden');
+        
+        filteredAchievements.forEach((achievement, index) => {
+          const achievementEl = document.createElement('div');
+          achievementEl.className = `achievement-card bg-white p-5 ${achievement.completed ? 'border-l-4 border-green-500' : ''}`;
+          achievementEl.style.animationDelay = `${index * 0.1}s`;
+          
+          // إضافة شارة الفئة
+          let categoryClass = '';
+          let categoryText = '';
+          
+          switch(achievement.category) {
+            case 'tasks':
+              categoryClass = 'tasks-badge';
+              categoryText = 'مهام';
+              break;
+            case 'points':
+              categoryClass = 'points-badge';
+              categoryText = 'نقاط';
+              break;
+            case 'consistency':
+              categoryClass = 'consistency-badge';
+              categoryText = 'انتظام';
+              break;
+            case 'special':
+              categoryClass = 'special-badge';
+              categoryText = 'خاص';
+              break;
+          }
+          
+          const categoryBadge = `<div class="category-badge ${categoryClass}">${categoryText}</div>`;
+          
+          achievementEl.innerHTML = `
+            <div class="flex items-start relative">
+              ${categoryBadge}
+              <div class="${achievement.bgColor} rounded-full p-3 ml-4">
+                <i class="${achievement.icon} ${achievement.color} text-xl"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-lg text-gray-800">${achievement.title}</h3>
+                <p class="text-gray-600 mb-3">${achievement.description}</p>
+                <div class="flex items-center justify-between">
+                  <div class="flex-1 mr-2">
+                    <div class="progress-bar">
+                      <div class="progress-value ${achievement.completed ? 'bg-green-500' : 'bg-gradient-to-r from-blue-400 to-blue-600'}" 
+                           style="width: ${(achievement.progress / achievement.target) * 100}%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold ${achievement.completed ? 'text-green-600' : 'text-blue-600'}">
+                    ${achievement.progress}/${achievement.target}
+                  </span>
+                </div>
+              </div>
+              <div class="trophy-icon ${achievement.completed ? 'text-yellow-500' : 'text-gray-300'}">
+                <i class="fas fa-trophy text-2xl"></i>
+              </div>
+            </div>
+          `;
+          
+          achievementsContainer.appendChild(achievementEl);
+        });
+      }
+    }
+    
+    // إضافة مستمعي الأحداث لأزرار التبويب
+    document.getElementById('tabAll').addEventListener('click', () => filterAchievements('all'));
+    document.getElementById('tabTasks').addEventListener('click', () => filterAchievements('tasks'));
+    document.getElementById('tabPoints').addEventListener('click', () => filterAchievements('points'));
+    document.getElementById('tabConsistency').addEventListener('click', () => filterAchievements('consistency'));
+    document.getElementById('tabSpecial').addEventListener('click', () => filterAchievements('special'));
+    
+    // تهيئة الصفحة
+    renderAchievements();
+    
+    // تأثيرات عند التمرير
+    function animateOnScroll() {
+      const elements = document.querySelectorAll('.achievement-card');
+      elements.forEach(el => {
+        const elementTop = el.getBoundingClientRect().top;
+        const elementVisible = 150;
+        
+        if (elementTop < window.innerHeight - elementVisible) {
+          el.style.opacity = "1";
+          el.style.transform = "translateY(0)";
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', animateOnScroll);
+    // تشغيل once عند التحميل
+    setTimeout(animateOnScroll, 300);
+  </script>
+</body>
+</html>      div.textContent = a.condition ? a.label : "🔒 " + a.label;
       box.appendChild(div);
     });
   </script></body>
