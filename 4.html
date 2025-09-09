@@ -482,47 +482,4 @@
     });
   </script>
 </body>
-  </html>
-    function getTodayKey() {
-      const now = new Date();
-      return now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
-    }
-
-    function showDailyChallenge() {
-      const todayKey = getTodayKey();
-      const lastKey = localStorage.getItem('lastChallengeKey');
-      if (lastKey !== todayKey) {
-        const randomIndex = Math.floor(Math.random() * challenges.length);
-        localStorage.setItem('todayChallenge', JSON.stringify(challenges[randomIndex]));
-        localStorage.setItem('lastChallengeKey', todayKey);
-        localStorage.removeItem('challengeCompleted');
-      }
-
-      challenge = JSON.parse(localStorage.getItem('todayChallenge'));
-      document.getElementById("challengeText").textContent = challenge.text;
-
-      if (localStorage.getItem("challengeCompleted") === "yes") {
-        document.getElementById("completeBtn").disabled = true;
-        document.getElementById("completeBtn").textContent = "✅ تم إنهاء التحدي اليوم";
-        document.getElementById("pointsMsg").classList.remove("hidden");
-        document.getElementById("challengePoints").textContent = challenge.points;
-      }
-    }
-
-    function completeChallenge() {
-      if (localStorage.getItem("challengeCompleted") === "yes") return;
-
-      let score = parseInt(localStorage.getItem("score")) || 0;
-      score += challenge.points;
-      localStorage.setItem("score", score);
-      localStorage.setItem("challengeCompleted", "yes");
-
-      document.getElementById("challengePoints").textContent = challenge.points;
-      document.getElementById("pointsMsg").classList.remove("hidden");
-      document.getElementById("completeBtn").disabled = true;
-      document.getElementById("completeBtn").textContent = "✅ تم إنهاء التحدي اليوم";
-    }
-
-    showDailyChallenge();
-  </script></body>
-</html>
+            </html>
